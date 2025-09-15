@@ -54,7 +54,7 @@ export function AuthForm({ onLogin }: AuthFormProps) {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
             <Vote className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">PollHub</h1>
+          <h1 className="text-3xl font-bold text-foreground">Voting</h1>
           <p className="text-muted-foreground mt-2">Create and participate in real-time polls</p>
         </div>
 

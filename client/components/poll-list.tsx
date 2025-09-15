@@ -53,10 +53,10 @@ export function PollList({ polls, onSelectPoll, showActions, onDeletePoll }: Pol
       {polls.map((poll) => (
         <Card key={poll.id} className="hover:shadow-md transition-shadow cursor-pointer">
           <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <CardTitle className="text-lg text-balance leading-tight">{poll.question}</CardTitle>
-                <CardDescription className="flex items-center space-x-4 mt-2">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <CardTitle className="text-base sm:text-lg text-balance leading-tight truncate">{poll.question}</CardTitle>
+                <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
                   <span className="flex items-center space-x-1">
                     <Users className="w-4 h-4" />
                     <span>{getTotalVotes(poll)} votes</span>
@@ -67,7 +67,7 @@ export function PollList({ polls, onSelectPoll, showActions, onDeletePoll }: Pol
                   </span>
                   <span className="flex items-center space-x-1">
                     <span>By</span>
-                    <span className="font-medium">{poll.createdBy}</span>
+                    <span className="font-medium truncate max-w-[40vw] sm:max-w-none">{poll.createdBy}</span>
                   </span>
                 </CardDescription>
               </div>
@@ -76,17 +76,14 @@ export function PollList({ polls, onSelectPoll, showActions, onDeletePoll }: Pol
           </CardHeader>
           <CardContent>
             <div className="space-y-2 mb-4">
-              {poll.options.slice(0, 3).map((option) => (
+              {poll.options.map((option) => (
                 <div key={option.id} className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">{option.text}</span>
                   <span className="font-medium">{option.votes} votes</span>
                 </div>
               ))}
-              {poll.options.length > 3 && (
-                <div className="text-sm text-muted-foreground">+{poll.options.length - 3} more options</div>
-              )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-col sm:flex-row">
               <Button
                 onClick={() => onSelectPoll(poll)}
                 className="flex-1"

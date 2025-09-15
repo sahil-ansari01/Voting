@@ -96,8 +96,8 @@ export function CreatePoll({ onCreatePoll }: CreatePollProps) {
         <Label>Poll Options</Label>
         {options.map((option, index) => (
           <Card key={index} className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0">
                 <Input
                   placeholder={`Option ${index + 1}`}
                   value={option}
@@ -106,7 +106,7 @@ export function CreatePoll({ onCreatePoll }: CreatePollProps) {
                 />
               </div>
               {options.length > 2 && (
-                <Button type="button" variant="outline" size="sm" onClick={() => removeOption(index)}>
+                <Button type="button" variant="outline" size="sm" onClick={() => removeOption(index)} className="shrink-0">
                   <X className="w-4 h-4" />
                 </Button>
               )}
@@ -122,7 +122,7 @@ export function CreatePoll({ onCreatePoll }: CreatePollProps) {
         )}
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center gap-2">
         <Switch id="publish" checked={isPublished} onCheckedChange={setIsPublished} />
         <Label htmlFor="publish">Publish immediately</Label>
       </div>

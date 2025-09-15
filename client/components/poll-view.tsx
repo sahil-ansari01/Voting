@@ -112,16 +112,16 @@ export function PollView({ poll, onBack, onVote, user }: PollViewProps) {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground text-balance">{poll.question}</h1>
-              <div className="flex items-center space-x-4 mt-2 text-muted-foreground">
-                <span className="flex items-center space-x-1">
-                  <Users className="w-4 h-4" />
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground text-balance truncate">{poll.question}</h1>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-muted-foreground text-sm leading-5">
+                <span className="flex items-center gap-1">
+                  <Users className="w-4 h-4 shrink-0" />
                   <span>{totalVotes} total votes</span>
                 </span>
-                <span className="flex items-center space-x-1">
-                  <Calendar className="w-4 h-4" />
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4 shrink-0" />
                   <span>{formatDate(poll.createdAt)}</span>
                 </span>
               </div>
@@ -198,7 +198,7 @@ export function PollView({ poll, onBack, onVote, user }: PollViewProps) {
                 <TrendingUp className="w-5 h-5" />
                 <span>Live Results</span>
               </CardTitle>
-              <CardDescription>Real-time voting results • {totalVotes} total votes</CardDescription>
+              <CardDescription className="text-sm leading-5">Real-time voting results • {totalVotes} total votes</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {sortedOptions.map((option, index) => {
@@ -207,7 +207,7 @@ export function PollView({ poll, onBack, onVote, user }: PollViewProps) {
 
                 return (
                   <div key={option.id} className="space-y-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-foreground">{option.text}</span>
                         {isWinning && (
@@ -216,7 +216,7 @@ export function PollView({ poll, onBack, onVote, user }: PollViewProps) {
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground whitespace-nowrap">
                         <span>{option.votes} votes</span>
                         <span>({percentage}%)</span>
                       </div>

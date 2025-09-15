@@ -173,17 +173,17 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shrink-0">
               <Vote className="w-4 h-4 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold text-foreground">PollHub</h1>
+            <h1 className="text-xl font-bold text-foreground truncate">Voting</h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">Active members: {activeUsers}</span>
-            <span className="text-sm text-muted-foreground">Welcome, {user.name}</span>
-            <Button variant="outline" size="sm" onClick={onLogout}>
+          <div className="flex items-center gap-3 flex-wrap justify-end">
+            <span className="text-xs sm:text-sm text-muted-foreground">Active: {activeUsers}</span>
+            <span className="text-xs sm:text-sm text-muted-foreground truncate max-w-[40vw] sm:max-w-none">Hi, {user.name}</span>
+            <Button variant="outline" size="sm" onClick={onLogout} className="whitespace-nowrap">
               <LogOut className="w-4 h-4 mr-2" />
               Logout
             </Button>
@@ -193,7 +193,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-full sm:max-w-md">
             <TabsTrigger value="polls" className="flex items-center space-x-2">
               <BarChart3 className="w-4 h-4" />
               <span>Polls</span>
@@ -209,7 +209,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
           </TabsList>
 
           <TabsContent value="polls" className="mt-6">
-            <Card>
+            <Card className="sm:rounded-lg rounded-md">
               <CardHeader>
                 <CardTitle>Active Polls</CardTitle>
                 <CardDescription>Participate in live polls and see real-time results</CardDescription>
@@ -225,7 +225,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
           </TabsContent>
 
           <TabsContent value="create" className="mt-6">
-            <Card>
+            <Card className="sm:rounded-lg rounded-md">
               <CardHeader>
                 <CardTitle>Create New Poll</CardTitle>
                 <CardDescription>Design a poll and share it with others</CardDescription>
@@ -237,7 +237,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
           </TabsContent>
 
           <TabsContent value="my-polls" className="mt-6">
-            <Card>
+            <Card className="sm:rounded-lg rounded-md">
               <CardHeader>
                 <CardTitle>My Polls</CardTitle>
                 <CardDescription>Manage polls you've created</CardDescription>
