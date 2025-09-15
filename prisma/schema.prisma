@@ -1,0 +1,88 @@
+// Prisma schema for the voting system application
+// This file defines the database structure and relationships
+// Learn more: https://pris.ly/d/prisma-schema
+
+// Prisma client generator configuration
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"  // Custom output directory for generated client
+}
+
+// Database connection configuration
+datasource db {
+  provider = "postgresql"  // Using PostgreSQL as the database
+  url      = env("DATABASE_URL")  // Database URL from environment variables
+}
+
+// User model - represents users who can create polls and vote
+model User {
+  id           Int      @id @default(autoincrement())  // Primary key
+  name         String                                  // User's display name
+  email        String   @unique                        // Unique email address
+  passwordHash String                                  // Hashed password for authentication
+
+  // Relations - users can create multiple polls and cast multiple votes
+  polls        Poll[]   // Polls created by this user
+  votes        Vote[]   // Votes cast by this user
+
+  // Timestamps for tracking creation and updates
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Poll model - represents voting polls with questions and options
+model Poll {
+  id          Int          @id @default(autoincrement())  // Primary key
+  question    String                                      // The poll question
+  isPublished Boolean      @default(false)                // Whether the poll is publicly visible
+
+  // Relations - polls belong to a creator and have multiple options
+  creatorId   Int                                         // Foreign key to User
+  creator     User         @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  options     PollOption[] // Available voting options for this poll
+
+  // Timestamps for tracking creation and updates
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Database index for efficient queries by creator
+  @@index([creatorId])
+}
+
+// PollOption model - represents individual voting options within a poll
+model PollOption {
+  id        Int      @id @default(autoincrement())  // Primary key
+  text      String                                  // The option text that users can vote for
+
+  // Relations - options belong to a poll and can receive multiple votes
+  pollId    Int                                     // Foreign key to Poll
+  poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes     Vote[]   // Votes cast for this option
+
+  // Timestamps for tracking creation and updates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Database index for efficient queries by poll
+  @@index([pollId])
+}
+
+// Vote model - represents a user's vote for a specific poll option
+// This creates an explicit many-to-many relationship between User and PollOption
+model Vote {
+  id            Int         @id @default(autoincrement())  // Primary key
+
+  // Relations - votes connect users to poll options
+  userId        Int                                       // Foreign key to User
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pollOptionId  Int                                       // Foreign key to PollOption
+  pollOption    PollOption  @relation(fields: [pollOptionId], references: [id], onDelete: Cascade)
+
+  // Timestamp for when the vote was cast
+  createdAt     DateTime    @default(now())
+
+  // Constraints and indexes
+  @@unique([userId, pollOptionId])  // Ensure a user can only vote once per poll option
+  @@index([pollOptionId])           // Index for efficient vote counting by option
+  @@index([userId])                 // Index for efficient queries by user
+}
