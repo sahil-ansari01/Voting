@@ -41,6 +41,7 @@ npm run dev
 # or
 npm run build && npm start
 
+```
 ## Client App (Next.js)
 
 The frontend lives in `client/` and is a Next.js app.
