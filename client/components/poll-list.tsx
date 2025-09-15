@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BarChart3, Users, Calendar, Trash2 } from "lucide-react"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 
 interface Poll {
   id: number
@@ -88,15 +89,36 @@ export function PollList({ polls, onSelectPoll, showActions, onDeletePoll }: Pol
             <div className="flex gap-2">
               <Button
                 onClick={() => onSelectPoll(poll)}
-                className="w-full"
+                className="flex-1"
                 variant={poll.isPublished ? "default" : "outline"}
               >
                 {poll.isPublished ? "View & Vote" : "View Poll"}
               </Button>
               {showActions && onDeletePoll && (
-                <Button type="button" variant="outline" onClick={() => onDeletePoll(poll.id)}>
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" variant="destructive" aria-label="Delete poll" className="shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete this poll?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. The poll "{poll.question}" and all of its votes will be permanently removed.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={() => onDeletePoll(poll.id)}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
           </CardContent>

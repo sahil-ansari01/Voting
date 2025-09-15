@@ -50,6 +50,8 @@ export function PollView({ poll, onBack, onVote, user }: PollViewProps) {
       reconnection: true,
     })
     socket.on('connect', () => {
+      // identify this user for unique active member counting
+      socket.emit('identify', String(user.id))
       socket.emit('join_poll', String(poll.id))
     })
     socket.on('poll_results', (payload: { pollId: number; options: { id: number; text: string; votes: number }[] }) => {

@@ -39,13 +39,21 @@ app.use('/api/users', userRoutes);    // User management endpoints
 app.use('/api/polls', pollRoutes);    // Poll creation and retrieval endpoints
 app.use('/api/votes', voteRoutes);    // Voting endpoints
 
-// Track active connections
-let activeConnections = 0;
+// Track unique active users by userId rather than raw socket connections
+const userIdToConnectionCount: Map<string, number> = new Map();
 
 // Socket.IO event handlers for real-time poll updates and presence
 io.on('connection', socket => {
-  activeConnections += 1;
-  io.emit('active_users', { count: activeConnections });
+  // When a client identifies itself, increment unique presence
+  socket.on('identify', (userIdRaw: unknown) => {
+    const userId = String(userIdRaw ?? '').trim();
+    if (!userId) return;
+    // Store on socket for cleanup on disconnect
+    (socket as any).userId = userId;
+    const current = userIdToConnectionCount.get(userId) ?? 0;
+    userIdToConnectionCount.set(userId, current + 1);
+    io.emit('active_users', { count: userIdToConnectionCount.size });
+  });
   // Allow clients to join a specific poll room for real-time updates
   socket.on('join_poll', (pollId: string) => {
     socket.join(`poll:${pollId}`);
@@ -55,8 +63,16 @@ io.on('connection', socket => {
     socket.leave(`poll:${pollId}`);
   });
   socket.on('disconnect', () => {
-    activeConnections = Math.max(0, activeConnections - 1);
-    io.emit('active_users', { count: activeConnections });
+    const userId: string | undefined = (socket as any).userId;
+    if (userId) {
+      const current = userIdToConnectionCount.get(userId) ?? 0;
+      if (current <= 1) {
+        userIdToConnectionCount.delete(userId);
+      } else {
+        userIdToConnectionCount.set(userId, current - 1);
+      }
+      io.emit('active_users', { count: userIdToConnectionCount.size });
+    }
   });
 });
 

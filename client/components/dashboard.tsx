@@ -83,6 +83,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
     const socket: Socket = io(API_URL, { transports: ["websocket", "polling"], reconnection: true })
     socketRef.current = socket
     socket.on('connect', () => {
+      // identify this user for unique active member counting
+      socket.emit('identify', String(user.id))
       // join existing polls for live results
       polls.forEach(p => socket.emit('join_poll', String(p.id)))
     })
@@ -158,10 +160,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
   const handleVote = async (pollId: number, optionId: number) => {
     try {
       await apiCreateVote({ userId: Number(user.id), pollOptionId: optionId })
-      setPolls(prev => prev.map(p => p.id === pollId ? {
-        ...p,
-        options: p.options.map(o => o.id === optionId ? { ...o, votes: o.votes + 1 } : o)
-      } : p))
+      // Do not optimistically increment; wait for server 'poll_results' to keep counts accurate
     } catch (err: any) {
       throw err
     }
