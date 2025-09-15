@@ -34,8 +34,22 @@ export async function createPoll(req: Request, res: Response) {
         isPublished: Boolean(isPublished),
         options: { create: options.map(text => ({ text })) }
       },
-      include: { options: true }
+      include: { 
+        options: true,
+        creator: { select: { id: true, name: true } }
+      }
     });
+    // Broadcast new poll to all connected clients
+    const io = req.app.locals.io as import('socket.io').Server;
+    io.emit('poll_created', {
+      id: poll.id,
+      question: poll.question,
+      isPublished: poll.isPublished,
+      createdAt: (poll as any).createdAt ?? new Date().toISOString(),
+      creator: poll.creator,
+      options: poll.options.map(o => ({ id: o.id, text: o.text, votes: 0 }))
+    });
+
     res.status(201).json(poll);
   } catch (_err) {
     res.status(500).json({ message: 'Failed to create poll' });
@@ -89,6 +103,28 @@ export async function getPoll(req: Request, res: Response) {
     res.json(poll);
   } catch (_err) {
     res.status(500).json({ message: 'Failed to fetch poll' });
+  }
+}
+
+/**
+ * Delete a poll by ID (and its options and votes via cascade)
+ */
+export async function deletePoll(req: Request, res: Response) {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id)) return res.status(400).json({ message: 'Invalid poll id' });
+
+    const existing = await prisma.poll.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ message: 'Poll not found' });
+
+    await prisma.poll.delete({ where: { id } });
+
+    const io = req.app.locals.io as import('socket.io').Server;
+    io.emit('poll_deleted', { id });
+
+    res.status(204).send();
+  } catch (_err) {
+    res.status(500).json({ message: 'Failed to delete poll' });
   }
 }
 

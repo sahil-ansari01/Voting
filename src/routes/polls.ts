@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPoll, listPolls, getPoll } from '../controllers/polls';
+import { createPoll, listPolls, getPoll, deletePoll } from '../controllers/polls';
 
 // Create Express router for poll-related endpoints
 const router = Router();
@@ -12,6 +12,9 @@ router.get('/', listPolls);
 
 // GET /api/polls/:id - Retrieve a specific poll by ID with vote counts
 router.get('/:id', getPoll);
+
+// DELETE /api/polls/:id - Delete a poll
+router.delete('/:id', deletePoll);
 
 export default router;
 

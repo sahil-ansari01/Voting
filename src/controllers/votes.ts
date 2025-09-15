@@ -26,6 +26,18 @@ export async function createVote(req: Request, res: Response) {
     });
     if (!option) return res.status(404).json({ message: 'Poll option not found' });
 
+    // Enforce one vote per poll (not per option)
+    const existingVote = await prisma.vote.findFirst({
+      where: {
+        userId: userIdNum,
+        pollOption: { pollId: option.pollId }
+      },
+      select: { id: true }
+    });
+    if (existingVote) {
+      return res.status(409).json({ message: 'You have already voted in this poll' });
+    }
+
     // Create the vote record
     const vote = await prisma.vote.create({ 
       data: { userId: userIdNum, pollOptionId: optionIdNum } 

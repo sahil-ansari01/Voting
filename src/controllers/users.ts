@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { prisma } from '../config/prisma';
 
 /**
@@ -41,6 +42,32 @@ export async function listUsers(_req: Request, res: Response) {
     res.json(users);
   } catch (_err) {
     res.status(500).json({ message: 'Failed to fetch users' });
+  }
+}
+
+/**
+ * Login user by email and password, returns JWT token
+ */
+export async function loginUser(req: Request, res: Response) {
+  try {
+    const { email, password } = req.body as { email: string; password: string }
+    if (!email || !password) return res.status(400).json({ message: 'Email and password are required' })
+
+    const user = await prisma.user.findUnique({ where: { email } })
+    if (!user) return res.status(401).json({ message: 'Invalid credentials' })
+
+    const ok = await bcrypt.compare(password, user.passwordHash)
+    if (!ok) return res.status(401).json({ message: 'Invalid credentials' })
+
+    const secret = process.env.JWT_SECRET || 'dev_secret_change_me'
+    const token = jwt.sign({ sub: user.id, email: user.email }, secret, { expiresIn: '7d' })
+
+    res.json({
+      token,
+      user: { id: user.id, name: user.name, email: user.email }
+    })
+  } catch (_err) {
+    res.status(500).json({ message: 'Failed to login' })
   }
 }
 

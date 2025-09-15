@@ -75,17 +75,17 @@ src/
 ### Testing with curl
 ```
 # Create user
-curl -X POST http://localhost:4000/api/users \
+curl -X POST http://localhost:5000/api/users \
  -H "Content-Type: application/json" \
  -d '{"name":"Alice","email":"alice@example.com","password":"pass"}'
 
 # Create poll
-curl -X POST http://localhost:4000/api/polls \
+curl -X POST http://localhost:5000/api/polls \
  -H "Content-Type: application/json" \
  -d '{"creatorId":"<USER_ID>","question":"Best JS runtime?","options":["Node","Deno"]}'
 
 # Vote
-curl -X POST http://localhost:4000/api/votes \
+curl -X POST http://localhost:5000/api/votes \
  -H "Content-Type: application/json" \
  -d '{"userId":"<USER_ID>","pollOptionId":"<OPTION_ID>"}'
 ```

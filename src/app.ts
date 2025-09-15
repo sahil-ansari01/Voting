@@ -39,8 +39,13 @@ app.use('/api/users', userRoutes);    // User management endpoints
 app.use('/api/polls', pollRoutes);    // Poll creation and retrieval endpoints
 app.use('/api/votes', voteRoutes);    // Voting endpoints
 
-// Socket.IO event handlers for real-time poll updates
+// Track active connections
+let activeConnections = 0;
+
+// Socket.IO event handlers for real-time poll updates and presence
 io.on('connection', socket => {
+  activeConnections += 1;
+  io.emit('active_users', { count: activeConnections });
   // Allow clients to join a specific poll room for real-time updates
   socket.on('join_poll', (pollId: string) => {
     socket.join(`poll:${pollId}`);
@@ -49,13 +54,17 @@ io.on('connection', socket => {
   socket.on('leave_poll', (pollId: string) => {
     socket.leave(`poll:${pollId}`);
   });
+  socket.on('disconnect', () => {
+    activeConnections = Math.max(0, activeConnections - 1);
+    io.emit('active_users', { count: activeConnections });
+  });
 });
 
 // Global error handling middleware (must be last)
 app.use(errorHandler);
 
 // Start the server
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Server listening on port ${PORT}`);
