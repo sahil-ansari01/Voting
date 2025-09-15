@@ -126,8 +126,12 @@ Notes
 - POST `/api/votes` { userId, pollOptionId }
 
 ### WebSocket Events
-- Client joins a poll room: `join_poll` with pollId
-- Server broadcasts results on: `poll_results` with `{ pollId, options: [{ id, text, votes }] }`
+- Client identifies themselves: `identify` with `{ userId }`
+- Server broadcasts active user count: `active_users` with `{ count }`
+- Client joins a poll room: `join_poll` with `pollId`
+- Client leaves a poll room: `leave_poll` with `pollId`
+- Server broadcasts new poll creation: `poll_created` with `{ id, question, isPublished, createdAt, creator: { id, name }, options: [{ id, text, votes }] }`
+- Server broadcasts poll results: `poll_results` with `{ pollId, options: [{ id, text, votes }] }`
 
 ### Testing with curl
 ```
