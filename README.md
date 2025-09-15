@@ -33,6 +33,7 @@ copy .env .env.example
 npx prisma generate
 npx prisma migrate dev --name init
 ```
+Note: Prisma client is generated to `generated/prisma/` directory
 
 4. Run
 ```
@@ -47,9 +48,9 @@ src/
   config/
     prisma.ts            # Prisma client singleton
   controllers/
-    users.controller.ts  # User handlers
-    polls.controller.ts  # Poll handlers
-    votes.controller.ts  # Vote handlers + broadcasting
+    users.ts             # User handlers
+    polls.ts             # Poll handlers
+    votes.ts             # Vote handlers + broadcasting
   middleware/
     errorHandler.ts      # Centralized error handling
   routes/
